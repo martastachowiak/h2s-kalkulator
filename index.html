@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kalkulator stężenia H₂S</title>
   <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
   <style>
@@ -53,23 +53,28 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
 	@media (max-width: 768px) {
-  		.grid {
-    		grid-template-columns: 1fr; /* jedna kolumna */
-  		}
-  		input[type=number] {
-    		width: 100%; /* pełna szerokość na telefonie */
-  		}
-  		.formula {
-    		font-size: 18px;
-  		}
-  		.title-bar {
-    		font-size: 16px;
-  		}
-		#cnt {
-  			aspect-ratio: 1 / 1;
-  			height: auto;
-  			width: 95%;
-		}
+	  body {
+	    padding: 12px;
+	  }
+	  .grid {
+	    grid-template-columns: 1fr; /* jedna kolumna */
+	    gap: 16px;
+	  }
+	  .card {
+	    padding: 14px;
+	  }
+	  input[type=number] {
+	    width: 100%; /* pełna szerokość na telefonie */
+	  }
+	  #cnt {
+	    height: 350px; /* kompaktowa mapa */
+	  }
+	  .formula {
+	    font-size: 18px;
+	  }
+	  .title-bar {
+	    font-size: 16px;
+	  }
 	}
   </style>
 </head>
@@ -231,6 +236,7 @@
   </script>
 </body>
 </html>
+
 
 
 
