@@ -230,17 +230,27 @@
         'xaxis.range': [10, 25], 'yaxis.range': [3, 24]
       });
     });
-	 function resizeSquare(){
+	function resizeSquare() {
+	  // Jeśli ekran jest szeroki – desktop
+	  if (window.innerWidth > 768) {
+	    Plotly.relayout('cnt', { height: 620 });
+	    return;
+	  }
+	
+	  // Dla telefonów – kwadratowa mapa
 	  const el = document.getElementById('cnt');
 	  const w = el.clientWidth || el.getBoundingClientRect().width;
-	  const h = Math.max(340, Math.min(520, Math.round(w * 0.92))); // ~kwadrat
-	  Plotly.relayout('cnt', {height: h});
+	  const h = Math.max(340, Math.min(520, Math.round(w * 0.92)));
+	  Plotly.relayout('cnt', { height: h });
 	}
+	
 	window.addEventListener('resize', resizeSquare);
- 
+	window.addEventListener('load', resizeSquare); // wywołaj przy starcie
+
   </script>
 </body>
 </html>
+
 
 
 
