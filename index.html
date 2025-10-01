@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Kalkulator stężenia H₂S</title>
   <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
   <style>
@@ -52,29 +52,22 @@
       padding: 8px 10px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
-	@media (max-width: 768px) {
-	  body {
-	    padding: 12px;
-	  }
-	  .grid {
-	    grid-template-columns: 1fr; /* jedna kolumna */
-	    gap: 16px;
-	  }
-	  .card {
-	    padding: 14px;
-	  }
-	  input[type=number] {
-	    width: 100%; /* pełna szerokość na telefonie */
-	  }
-	  #cnt {
-	    height: 350px; /* kompaktowa mapa */
-	  }
-	  .formula {
-	    font-size: 18px;
-	  }
-	  .title-bar {
-	    font-size: 16px;
-	  }
+	 body { overflow-x: hidden; }          /* usuń poziomy scroll */
+	input[type=number]{ box-sizing: border-box; font-size:16px; } /* brak auto-zoomu iOS */
+	.form-group { width:75%; max-width:420px; }                    /* 75% szerokości karty */
+	#cnt { height:620px; }                                        /* wysokość startowa mapy (desktop) */
+	 
+    /* MOBILE */
+    @media (max-width: 768px){
+      body { padding:16px; }
+      .grid { grid-template-columns:1fr; gap:16px; }
+      .form-group { width:75%; max-width: 360px; } /* dalej 75% karty */
+      .formula { font-size:18px; }
+      .title-bar { font-size:16px; }
+
+      /* mapa niemal kwadratowa – wysokość ~= szerokość */
+      #cnt { height: min(92vw, 520px); min-height: 340px; }
+      .wrap { max-width: 100%; }
 	}
   </style>
 </head>
@@ -104,13 +97,17 @@
         </div>
 
         <br>
-        <label for="t">Czas przetrzymania ścieków <b>t</b> [h] (3–24):</label>
-        <input id="t" type="number" step="0.1" min="3" max="24" placeholder="np. 6">
+		<div class="form-group">
+		  <label for="t">Czas przetrzymania ścieków <b>t</b> [h] (3–24):</label>
+		  <input id="t" type="number" step="0.1" min="3" max="24" placeholder="np. 6">
+		</div>
+		
+		<div class="form-group">
+		  <label for="T">Temperatura ścieków <b>T</b> [°C] (10–25):</label>
+		  <input id="T" type="number" step="0.1" min="10" max="25" placeholder="np. 20">
+		</div>
 
-        <label for="T">Temperatura ścieków <b>T</b> [°C] (10–25):</label>
-        <input id="T" type="number" step="0.1" min="10" max="25" placeholder="np. 20">
-
-        <button id="btn">Oblicz i zaznacz punkt</button>
+		  <button id="btn">Oblicz i zaznacz punkt</button>
 
         <div class="result">
           Przewidywane stężenie H₂S:
@@ -190,7 +187,7 @@
     };
 
     const config = { displayModeBar:false, responsive:true, doubleClick:'reset' };
-    Plotly.newPlot('cnt', [contour, pointTrace], layout, config);
+	Plotly.newPlot('cnt', [contour, pointTrace], layout, config).then(resizeSquare);
 
     document.getElementById('btn').addEventListener('click', () => {
       const t = parseFloat(document.getElementById('t').value);
@@ -233,9 +230,18 @@
         'xaxis.range': [10, 25], 'yaxis.range': [3, 24]
       });
     });
+	 function resizeSquare(){
+	  const el = document.getElementById('cnt');
+	  const w = el.clientWidth || el.getBoundingClientRect().width;
+	  const h = Math.max(340, Math.min(520, Math.round(w * 0.92))); // ~kwadrat
+	  Plotly.relayout('cnt', {height: h});
+	}
+	window.addEventListener('resize', resizeSquare);
+ 
   </script>
 </body>
 </html>
+
 
 
 
