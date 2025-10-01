@@ -51,6 +51,20 @@
       padding: 8px 10px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
+	@media (max-width: 768px) {
+  		.grid {
+    		grid-template-columns: 1fr; /* jedna kolumna */
+  		}
+  		input[type=number] {
+    		width: 100%; /* pełna szerokość na telefonie */
+  		}
+  		.formula {
+    		font-size: 18px;
+  		}
+  		.title-bar {
+    		font-size: 16px;
+  		}
+	}
   </style>
 </head>
 <body>
@@ -211,3 +225,4 @@
   </script>
 </body>
 </html>
+
