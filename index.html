@@ -218,14 +218,19 @@
 
       Plotly.restyle('cnt', { x: [[T]], y: [[t]], text: [[textVal]] }, [1]);
     });
-
-    document.getElementById('dl').addEventListener('click', async () => {
-      const url = await Plotly.toImage('cnt', {format:'png', width:900, height:620, scale:2});
-      const aEl = document.createElement('a');
-      aEl.href = url; aEl.download = 'mapa_konturowa_H2S.png';
-      document.body.appendChild(aEl); aEl.click(); aEl.remove();
-    });
-
+	document.getElementById('dl').addEventListener('click', async () => {
+	  const t = document.getElementById('t').value || '—';
+	  const T = document.getElementById('T').value || '—';
+	  const filename = `mapa_H2S_t${t}_T${T}.png`; // np. mapa_H2S_t6_T20.png
+	
+	  const url = await Plotly.toImage('cnt', {format:'png', width:900, height:620, scale:2});
+	  const aEl = document.createElement('a');
+	  aEl.href = url;
+	  aEl.download = filename;
+	  document.body.appendChild(aEl);
+	  aEl.click();
+	  aEl.remove();
+	});
     document.getElementById('resetViewBtn').addEventListener('click', () => {
       Plotly.relayout('cnt', {
         'xaxis.range': [10, 25], 'yaxis.range': [3, 24]
@@ -251,6 +256,7 @@
   </script>
 </body>
 </html>
+
 
 
 
