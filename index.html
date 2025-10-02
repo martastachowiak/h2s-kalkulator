@@ -219,18 +219,56 @@
       Plotly.restyle('cnt', { x: [[T]], y: [[t]], text: [[textVal]] }, [1]);
     });
 	document.getElementById('dl').addEventListener('click', async () => {
-	  const t = document.getElementById('t').value || '—';
-	  const T = document.getElementById('T').value || '—';
-	  const filename = `mapa_H2S_t${t}_T${T}.png`; // np. mapa_H2S_t6_T20.png
+	  // pobierz i znormalizuj t, T (przecinek → kropka, usunięcie zbędnych znaków)
+	  const tRaw = (document.getElementById('t').value || '').replace(',', '.').replace(/[^0-9.]/g, '');
+	  const TRaw = (document.getElementById('T').value || '').replace(',', '.').replace(/[^0-9.]/g, '');
 	
-	  const url = await Plotly.toImage('cnt', {format:'png', width:900, height:620, scale:2});
-	  const aEl = document.createElement('a');
-	  aEl.href = url;
-	  aEl.download = filename;
-	  document.body.appendChild(aEl);
-	  aEl.click();
-	  aEl.remove();
+	  const tNum = parseFloat(tRaw);
+	  const TNum = parseFloat(TRaw);
+	
+	  const tValid = !isNaN(tNum) && tNum >= 3 && tNum <= 24;
+	  const TValid = !isNaN(TNum) && TNum >= 10 && TNum <= 25;
+	
+	  // Etykiety do tytułu i nazwy – 1 miejsce po przecinku, bez .0
+	  const tLabel = tValid ? tNum.toFixed(1).replace(/\.0$/, '') : '—';
+	  const TLabel = TValid ? TNum.toFixed(1).replace(/\.0$/, '') : '—';
+	
+	  const titleText = `Szacowane stężenie H₂S w studni rozprężnej za rurociągiem tłocznym dla t=${tLabel} [h] i T=${TLabel} [°C]`;
+	  const filename  = `mapa_H2S_t${tLabel}_T${TLabel}.png`;
+	
+	  const gd = document.getElementById('cnt');
+	
+	  // zapamiętaj poprzedni tytuł i margines
+	  const originalTitle = gd.layout && gd.layout.title ? gd.layout.title.text : '';
+	  const originalMarginTop = gd.layout && gd.layout.margin ? gd.layout.margin.t : undefined;
+	
+	  // ustaw tymczasowy tytuł nad mapą + większy górny margines
+	  await Plotly.relayout('cnt', {
+	    'title.text': titleText,
+	    'title.x': 0.5,
+	    'title.xanchor': 'center',
+	    'title.font.size': 16,
+	    'margin.t': 80
+	  });
+	
+	  // ustal wysokość z aktualnego layoutu (żeby PNG nie ucinał tytułu)
+	  const h = (gd._fullLayout && gd._fullLayout.height) ? gd._fullLayout.height : 620;
+	  const url = await Plotly.toImage('cnt', { format: 'png', width: 900, height: h, scale: 2 });
+	
+	  // pobierz plik
+	  const a = document.createElement('a');
+	  a.href = url;
+	  a.download = filename;
+	  document.body.appendChild(a);
+	  a.click();
+	  a.remove();
+	
+	  // przywróć poprzedni układ
+	  const restore = { 'title.text': originalTitle };
+	  restore['margin.t'] = (typeof originalMarginTop === 'number') ? originalMarginTop : 55;
+	  await Plotly.relayout('cnt', restore);
 	});
+
     document.getElementById('resetViewBtn').addEventListener('click', () => {
       Plotly.relayout('cnt', {
         'xaxis.range': [10, 25], 'yaxis.range': [3, 24]
@@ -256,6 +294,7 @@
   </script>
 </body>
 </html>
+
 
 
 
